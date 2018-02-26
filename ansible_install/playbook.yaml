@@ -1,0 +1,59 @@
+- hosts: all
+  become: true
+  become_method: sudo
+
+  vars:
+    timezone: Europe/Brussels
+
+  roles:
+    - { role: common, tags: ["common"] }
+    - { role: ntp, tags: ["ntp"] }
+    - { role: docker, tags: ["docker"] }
+    - { role: java, openjdk_editor: 'azul', openjdk_version: '8', tags: ["openjdk","java"] }
+    - { role: sbt, tags: ["sbt"] }
+
+  tasks:
+    - name: add 100.64.64.64 on lo network
+      lineinfile:
+        insertafter: 'iface lo inet loopback'
+        line: '    post-up ip addr add 100.64.64.64/32 dev lo'
+        path: /etc/network/interfaces
+
+    - name: install virtualenv package
+      apt:
+        name: virtualenv
+        state: present
+
+    - name: install devscripts package
+      apt:
+        name: devscripts
+        state: present
+
+    - name: install spark-notebook community deb package
+      apt:
+        deb: https://s3.eu-central-1.amazonaws.com/spark-notebook/deb/spark-notebook_master-scala-2.11.8-spark-2.2.0-hadoop-2.7.2_all.deb
+
+    - name: fix spark-notebook ACL
+      file:
+        path: "/usr/share/spark-notebook"
+        owner: "spark-notebook"
+        group: "spark-notebook"
+        recurse: yes
+
+    - name: Custom default play configuration
+      copy:
+        src: "etc_spark-notebook"
+        dest: "/etc/default/spark-notebook"
+      tags:
+        - spark-notebook
+
+    - name: copy update-notebook script
+      copy:
+        src: "update-notebook.sh"
+        dest: "/usr/local/bin/update-notebook"
+        owner: "spark-notebook"
+        group: "spark-notebook"
+        mode: 0755
+      tags:
+        - spark-notebook
+

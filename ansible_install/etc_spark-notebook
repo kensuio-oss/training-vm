@@ -1,0 +1,7 @@
+# MESOS_NATIVE_LIBRARY=/usr/lib/libmesos.so
+# SPARK_HOME=""
+# JAVA_OPTS="-Dpidfile.path=/var/run/adastik/play.pid $JAVA_OPTS"
+# JAVA_OPTS="-Dconfig.file=/etc/adastik/demo.conf $JAVA_OPTS"
+# JAVA_OPTS="-Dhttp.port=9001 $JAVA_OPTS"
+# PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/hadoop/hadoop/sbin:/home/hadoop/hadoop/bin
+SPARK_LOCAL_IP="localhost"

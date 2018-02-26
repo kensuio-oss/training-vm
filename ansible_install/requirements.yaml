@@ -1,0 +1,20 @@
+- src: https://github.com/kensuio-oss/ansible-role-common.git
+  version: master
+  name: common
+
+- src: https://github.com/kensuio-oss/ansible-role-ntp.git
+  version: master
+  name: ntp
+
+- src: https://github.com/kensuio-oss/ansible-role-docker.git
+  version: master
+  name: docker
+
+- src: https://github.com/kensuio-oss/ansible-role-java.git
+  version: master
+  name: java
+
+- src: https://github.com/kensuio-oss/ansible-role-sbt.git
+  version: master
+  name: sbt
+
