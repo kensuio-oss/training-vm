@@ -27,11 +27,18 @@ export PACKER_SSH_PASS=world
 ```
 
 
-## Build
+## Build Azure image
 the VM image is built with Packer
 
 ```
-packer build packer.conf
+packer build packer-azure.json
+```
+
+## Build Hyper-V image
+the VM image is built with Packer
+
+```
+packer build packer-hyperv.json
 ```
 
 # Spark notebook Debian package
