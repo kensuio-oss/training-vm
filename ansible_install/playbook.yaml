@@ -6,7 +6,7 @@
     timezone: Europe/Brussels
 
   roles:
-    - { role: common, tags: ["common"] }
+    - { role: common, tags: ["common"], ssh_user: "frbayart" }
     - { role: ntp, tags: ["ntp"] }
     - { role: docker, tags: ["docker"] }
     - { role: java, openjdk_editor: 'azul', openjdk_version: '8', tags: ["openjdk","java"] }
@@ -47,6 +47,20 @@
       tags:
         - spark-notebook
 
+    - name: Custom training.conf play configuration
+      copy:
+        src: "training.conf"
+        dest: "/etc/spark-notebook/training.conf"
+      tags:
+        - spark-notebook
+
+    - name: Custom application.ini play configuration
+      copy:
+        src: "application.ini"
+        dest: "/etc/spark-notebook/application.ini"
+      tags:
+        - spark-notebook
+
     - name: copy update-notebook script
       copy:
         src: "update-notebook.sh"
@@ -57,3 +71,9 @@
       tags:
         - spark-notebook
 
+    - name: "create directory /home/spark-notebook"
+      file:
+        path: "/home/spark-notebook"
+        owner: "spark-notebook"
+        group: "spark-notebook"
+        state: directory

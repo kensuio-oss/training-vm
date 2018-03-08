@@ -1,0 +1,74 @@
+{
+    "variables": {
+        "assets_root": "{{env `ASSETS_URL`}}",
+        "ssh_user": "{{env `PACKER_SSH_USER`}}",
+        "ssh_pass": "{{env `PACKER_SSH_PASS`}}"
+    },
+    "builders": [
+      {
+        "type": "hyperv-iso",
+        "boot_wait": "5s",
+        "ram_size": 4096,
+        "cpu": 2,
+        "guest_additions_mode": "disable",
+        "generation": 1,
+        "enable_secure_boot": false,
+        "http_directory": "preseed",
+        "boot_command": [
+          "<enter><wait>",
+          "<f6><esc>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+          "<bs><bs><bs>",
+          "/install/vmlinuz ",
+          "initrd=/install/initrd.gz ",
+          "netcfg/choose_interface=eth0 ",
+          "net.ifnames=0 ",
+          "auto-install/enable=true ",
+          "debconf/priority=critical ",
+          "debian-installer/allow_unauthenticated_ssl=true ",
+          "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/training.cfg ",
+          "<enter>"
+        ],
+        "disk_size": 16384,
+        "iso_urls": [
+          "http://releases.ubuntu.com/16.04.4/ubuntu-16.04.4-server-amd64.iso"
+        ],
+        "iso_checksum_type": "sha256",
+        "iso_checksum": "0a03608988cfd2e50567990dc8be96fb3c501e198e2e6efcb846d89efc7b89f2",
+        "ssh_username": "{{user `ssh_user`}}",
+        "ssh_password": "{{user `ssh_pass`}}",
+        "ssh_port": 22,
+        "ssh_timeout": "10m",
+        "shutdown_command": "echo '{{user `password`}}'|sudo -S /sbin/halt -h -p",
+        "vm_name": "kensu-training",
+        "output_directory": "hyperv-image"
+      }],
+    "provisioners": [{
+          "type": "shell",
+          "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+          "inline": [
+            "mkdir /srv/tmp",
+            "chmod 777 /srv/tmp"
+          ],
+          "inline_shebang": "/bin/sh -x",
+          "skip_clean": true
+      },
+      {
+          "type": "file",
+          "source": "ansible_install",
+          "destination": "/srv/tmp"
+      },
+      {
+          "type": "shell",
+          "execute_command": "echo '{{user `ssh_pass`}}' | sudo -E -S sh '{{ .Path }}'",
+          "script": "bootstrap.sh",
+          "skip_clean": true
+      }]
+  }
